@@ -30,6 +30,17 @@ Gladys before reporting a problem.
 
 In scope: the code of this repository and the Docker image it publishes.
 
+What the integration handles:
+
+- **No secret**: GeoSphere Austria needs no account and no key, the configuration holds none.
+- **The position of a Gladys house** (the `location` permission of the manifest): read from Gladys,
+  sent only to GeoSphere Austria (`dataset.api.hub.geosphere.at`, `warnungen.zamg.at`) over HTTPS
+  to get the forecast and the warnings of the place, rounded to 4 decimals. It is never written to
+  the logs nor to `/data`.
+- **`/data/state.json`**: the identifiers, levels and end times of the warnings already announced
+  to the scenes. Nothing personal.
+- **Network**: outbound HTTPS GET requests to the two GeoSphere hosts above, nothing inbound.
+
 Out of scope: Gladys Assistant itself (see its
-[security policy](https://github.com/GladysAssistant/Gladys/security/policy)),
-and the third-party services and devices the integration talks to.
+[security policy](https://github.com/GladysAssistant/Gladys/security/policy)), and the GeoSphere
+Austria services.

@@ -1,45 +1,76 @@
 // -----------------------------------------------------------------------------
-// Integration configuration.
-//
-// The configuration is filled in by the user in Gladys, from the `config_schema`
-// declared in `gladys-assistant-integration.json`. The SDK fetches it for you
-// (`gladys.getConfig()`) and notifies you of every change through
-// `gladys.onConfigUpdated()`.
-//
-// This module only provides defaults and normalizes the received object, so the
-// rest of the code never has to deal with `undefined`.
+// Integration configuration: defaults (mirroring the manifest `config_schema`)
+// and normalization, so the rest of the code never deals with raw form values.
 // -----------------------------------------------------------------------------
 
-// Defaults: they MUST stay consistent with the `default` values declared in the
-// `config_schema` of the manifest.
+/** The languages of the Gladys interface, in the order of the manifest options. */
+export const LANGUAGES = ['en', 'fr', 'de', 'es'];
+
+/** The refresh intervals offered, in minutes (option values are strings). */
+export const REFRESH_CHOICES = ['10', '15', '30', '60'];
+
+// Defaults: they MUST stay equal to the `default` values of the manifest
+// (test/manifest.test.js checks it).
 export const DEFAULT_CONFIG = {
-  latitude: 48.8566, // Paris
-  longitude: 2.3522,
-  unit: 'celsius', // 'celsius' | 'fahrenheit'
-  // Seconds between two reads of the polled sensors. Gladys polls at most once
-  // a minute: slower intervals are applied by skipping polls (see
-  // createPoller in src/devices/index.js).
-  poll_frequency: 300,
-  // Reserved key (NOT in config_schema): because the manifest declares both
-  // 'local' and 'cloud' in its `transports` field, Gladys shows a standard
-  // "Prefer the local connection" toggle and sends the user's choice here.
-  // Read-only for the integration; defaults to true.
-  GLADYS_PREFER_LOCAL: true,
+  // Selector of a Gladys house (source "houses"); empty = the first located house.
+  house: '',
+  // Coordinates typed by hand: strings, so that a comma or a decimal point
+  // both work (a Gladys number field refuses decimals on some cores).
+  latitude: '',
+  longitude: '',
+  // TAWES station id; empty = the station nearest to the location.
+  station_id: '',
+  // TAWES stations report every 10 minutes: a faster pace reads nothing new.
+  refresh_minutes: '10',
+  language: 'fr',
 };
 
 /**
- * Merge the user config with the defaults.
- * @param {Record<string, unknown>} raw config returned by the SDK
+ * Parse a coordinate typed by a user: "47.07", "47,07", " 47.07 ".
+ * @param {unknown} value
+ * @param {number} limit 90 for a latitude, 180 for a longitude
+ * @returns {number | null} null when empty or invalid
+ */
+export function parseCoordinate(value, limit) {
+  if (typeof value === 'number') {
+    return Number.isFinite(value) && Math.abs(value) <= limit ? value : null;
+  }
+  if (typeof value !== 'string' || value.trim() === '') {
+    return null;
+  }
+  const text = value.trim().replace(',', '.');
+  if (!/^[-+]?\d+(\.\d+)?$/.test(text)) {
+    return null;
+  }
+  const number = Number(text);
+  return Math.abs(number) <= limit ? number : null;
+}
+
+/**
+ * Merge the user config with the defaults and type every value.
+ * @param {Record<string, unknown>} [raw] config returned by the SDK
  */
 export function normalizeConfig(raw = {}) {
+  const merged = { ...DEFAULT_CONFIG, ...raw };
+  const latitude = parseCoordinate(merged.latitude, 90);
+  const longitude = parseCoordinate(merged.longitude, 180);
+  const refresh = REFRESH_CHOICES.includes(String(merged.refresh_minutes))
+    ? Number(merged.refresh_minutes)
+    : Number(DEFAULT_CONFIG.refresh_minutes);
+  const stationId = String(merged.station_id ?? '').trim();
   return {
-    ...DEFAULT_CONFIG,
-    ...raw,
-    // Force the types: config may arrive as strings from a form.
-    latitude: Number(raw.latitude ?? DEFAULT_CONFIG.latitude),
-    longitude: Number(raw.longitude ?? DEFAULT_CONFIG.longitude),
-    poll_frequency: Number(raw.poll_frequency ?? DEFAULT_CONFIG.poll_frequency),
-    // The preference is a boolean; anything but an explicit false means true.
-    GLADYS_PREFER_LOCAL: raw.GLADYS_PREFER_LOCAL !== false,
+    house: typeof merged.house === 'string' ? merged.house : '',
+    // Both or neither: one coordinate alone is no location.
+    latitude: latitude !== null && longitude !== null ? latitude : null,
+    longitude: latitude !== null && longitude !== null ? longitude : null,
+    // A coordinate typed but unreadable: said in the connection status.
+    coordinatesInvalid:
+      (String(merged.latitude ?? '').trim() !== '' ||
+        String(merged.longitude ?? '').trim() !== '') &&
+      (latitude === null || longitude === null),
+    stationId: /^\d{1,8}$/.test(stationId) ? stationId : '',
+    stationIdInvalid: stationId !== '' && !/^\d{1,8}$/.test(stationId),
+    refreshMs: refresh * 60 * 1000,
+    language: LANGUAGES.includes(merged.language) ? merged.language : DEFAULT_CONFIG.language,
   };
 }
