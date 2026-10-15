@@ -1,177 +1,537 @@
 {
   "manifest_version": 1,
   "type": "device",
-  "name": "Demo Devices Template",
+  "name": "GeoSphere Austria",
   "description": {
-    "en": "Starter template showing sensors, a switch, a dimmable light and a smart plug.",
-    "fr": "Template de démarrage : capteurs, interrupteur, lampe variable et prise connectée."
+    "en": "Austrian weather from GeoSphere Austria (ex-ZAMG): stations, forecast and official warnings.",
+    "fr": "Météo autrichienne de GeoSphere Austria (ex-ZAMG) : stations, prévisions, avertissements officiels.",
+    "de": "Wetter von GeoSphere Austria (ehem. ZAMG): Messstationen, Vorhersage und amtliche Warnungen.",
+    "es": "Tiempo de Austria de GeoSphere Austria (ex ZAMG): estaciones, previsión y alertas oficiales."
   },
   "version": "1.0.0",
-  "docker_image": "ghcr.io/gladysassistant/integration-template-js:1.0.0",
-  "gladys_version": ">=5.1.0",
-  "cover_image": "https://raw.githubusercontent.com/GladysAssistant/integration-template-js/master/cover.png",
-  "categories": ["lighting", "security", "environment"],
-  "transports": ["local", "cloud"],
+  "docker_image": "ghcr.io/guim31/gladys-geosphere:1.0.0",
+  "gladys_version": ">=5.2.0",
+  "cover_image": "https://raw.githubusercontent.com/guim31/gladys-geosphere/main/cover.png",
+  "categories": ["environment"],
+  "transports": ["cloud"],
+  "location": true,
   "config_schema": [
     {
       "key": "intro",
       "type": "section",
-      "label": { "en": "Getting started", "fr": "Pour commencer" },
+      "label": {
+        "en": "GeoSphere Austria",
+        "fr": "GeoSphere Austria",
+        "de": "GeoSphere Austria",
+        "es": "GeoSphere Austria"
+      },
       "description": {
-        "en": "The demo weather station reads real data from the free Open-Meteo API: pick the coordinates to observe. No account, no API key.",
-        "fr": "La station météo de démonstration lit de vraies données via l'API gratuite Open-Meteo : choisissez les coordonnées à observer. Pas de compte, pas de clé d'API."
+        "en": "Open data of GeoSphere Austria, the Austrian weather service: no account, no key. By default, the integration uses the position of your first Gladys house: the nearest weather station, the forecast and the warnings of that place. Not affiliated with GeoSphere Austria.",
+        "fr": "Données ouvertes de GeoSphere Austria, le service météo autrichien : ni compte, ni clé. Par défaut, l'intégration prend la position de votre première maison Gladys : la station météo la plus proche, les prévisions et les avertissements de ce lieu. Sans lien avec GeoSphere Austria.",
+        "de": "Offene Daten von GeoSphere Austria, dem österreichischen Wetterdienst: kein Konto, kein Schlüssel. Standardmäßig nutzt die Integration die Position deines ersten Gladys-Zuhauses: die nächste Wetterstation, die Vorhersage und die Warnungen dieses Orts. Keine Verbindung zu GeoSphere Austria.",
+        "es": "Datos abiertos de GeoSphere Austria, el servicio meteorológico austriaco: sin cuenta ni clave. Por defecto, la integración usa la posición de su primera casa de Gladys: la estación más cercana, la previsión y las alertas de ese lugar. Sin relación con GeoSphere Austria."
       },
       "links": [
         {
-          "url": "https://open-meteo.com/en/docs",
-          "label": { "en": "Open-Meteo documentation", "fr": "Documentation Open-Meteo" }
+          "url": "https://data.hub.geosphere.at/",
+          "label": {
+            "en": "GeoSphere Data Hub",
+            "fr": "GeoSphere Data Hub",
+            "de": "GeoSphere Data Hub",
+            "es": "GeoSphere Data Hub"
+          }
+        },
+        {
+          "url": "https://www.geosphere.at/",
+          "label": {
+            "en": "GeoSphere Austria website",
+            "fr": "Site de GeoSphere Austria",
+            "de": "Website von GeoSphere Austria",
+            "es": "Sitio de GeoSphere Austria"
+          }
         }
       ]
     },
     {
-      "key": "latitude",
-      "type": "number",
-      "label": { "en": "Latitude", "fr": "Latitude" },
-      "description": {
-        "en": "Latitude used for the demo weather sensor.",
-        "fr": "Latitude utilisée par le capteur météo de démonstration."
+      "key": "house",
+      "type": "select",
+      "source": "houses",
+      "label": {
+        "en": "House",
+        "fr": "Maison",
+        "de": "Zuhause",
+        "es": "Casa"
       },
-      "placeholder": { "en": "e.g. 48.8566", "fr": "ex. 48.8566" },
-      "required": true,
-      "default": 48.8566,
-      "min": -90,
-      "max": 90
+      "description": {
+        "en": "The house whose position is used. Empty: the first house with a position.",
+        "fr": "La maison dont la position est utilisée. Vide : la première maison qui a une position.",
+        "de": "Das Zuhause, dessen Position genutzt wird. Leer: das erste Zuhause mit Position.",
+        "es": "La casa cuya posición se usa. Vacío: la primera casa con posición."
+      },
+      "required": false
+    },
+    {
+      "key": "latitude",
+      "type": "string",
+      "label": {
+        "en": "Latitude (optional)",
+        "fr": "Latitude (facultatif)",
+        "de": "Breitengrad (optional)",
+        "es": "Latitud (opcional)"
+      },
+      "description": {
+        "en": "To use another place than a house. Takes precedence over the house.",
+        "fr": "Pour un autre lieu qu'une maison. Prioritaire sur la maison.",
+        "de": "Für einen anderen Ort als ein Zuhause. Hat Vorrang vor dem Zuhause.",
+        "es": "Para otro lugar que una casa. Tiene prioridad sobre la casa."
+      },
+      "placeholder": {
+        "en": "e.g. 47.07",
+        "fr": "ex. 47,07",
+        "de": "z. B. 47,07",
+        "es": "p. ej. 47,07"
+      },
+      "required": false,
+      "default": ""
     },
     {
       "key": "longitude",
-      "type": "number",
-      "label": { "en": "Longitude", "fr": "Longitude" },
-      "description": {
-        "en": "Longitude used for the demo weather sensor.",
-        "fr": "Longitude utilisée par le capteur météo de démonstration."
+      "type": "string",
+      "label": {
+        "en": "Longitude (optional)",
+        "fr": "Longitude (facultatif)",
+        "de": "Längengrad (optional)",
+        "es": "Longitud (opcional)"
       },
-      "placeholder": { "en": "e.g. 2.3522", "fr": "ex. 2.3522" },
-      "required": true,
-      "default": 2.3522,
-      "min": -180,
-      "max": 180
+      "placeholder": {
+        "en": "e.g. 15.44",
+        "fr": "ex. 15,44",
+        "de": "z. B. 15,44",
+        "es": "p. ej. 15,44"
+      },
+      "required": false,
+      "default": ""
     },
     {
-      "key": "unit",
-      "type": "select",
-      "label": { "en": "Temperature unit", "fr": "Unité de température" },
+      "key": "station_id",
+      "type": "string",
+      "label": {
+        "en": "Weather station (optional)",
+        "fr": "Station météo (facultatif)",
+        "de": "Wetterstation (optional)",
+        "es": "Estación meteorológica (opcional)"
+      },
+      "description": {
+        "en": "Id of a GeoSphere station. Empty: the nearest one. The action below lists them.",
+        "fr": "Identifiant d'une station GeoSphere. Vide : la plus proche. L'action ci-dessous les liste.",
+        "de": "ID einer GeoSphere-Station. Leer: die nächste. Die Aktion unten listet sie auf.",
+        "es": "Identificador de una estación GeoSphere. Vacío: la más cercana. La acción de abajo las lista."
+      },
+      "placeholder": {
+        "en": "e.g. 11035",
+        "fr": "ex. 11035",
+        "de": "z. B. 11035",
+        "es": "p. ej. 11035"
+      },
       "required": false,
-      "default": "celsius",
+      "default": ""
+    },
+    {
+      "key": "refresh_minutes",
+      "type": "select",
+      "label": {
+        "en": "Refresh interval",
+        "fr": "Fréquence de rafraîchissement",
+        "de": "Aktualisierungsintervall",
+        "es": "Intervalo de actualización"
+      },
+      "description": {
+        "en": "The stations report every 10 minutes.",
+        "fr": "Les stations publient toutes les 10 minutes.",
+        "de": "Die Stationen melden alle 10 Minuten.",
+        "es": "Las estaciones publican cada 10 minutos."
+      },
+      "required": false,
+      "default": "10",
       "options": [
-        { "value": "celsius", "label": { "en": "Celsius", "fr": "Celsius" } },
-        { "value": "fahrenheit", "label": { "en": "Fahrenheit", "fr": "Fahrenheit" } }
+        {
+          "value": "10",
+          "label": {
+            "en": "10 minutes",
+            "fr": "10 minutes",
+            "de": "10 Minuten",
+            "es": "10 minutos"
+          }
+        },
+        {
+          "value": "15",
+          "label": {
+            "en": "15 minutes",
+            "fr": "15 minutes",
+            "de": "15 Minuten",
+            "es": "15 minutos"
+          }
+        },
+        {
+          "value": "30",
+          "label": {
+            "en": "30 minutes",
+            "fr": "30 minutes",
+            "de": "30 Minuten",
+            "es": "30 minutos"
+          }
+        },
+        {
+          "value": "60",
+          "label": {
+            "en": "60 minutes",
+            "fr": "60 minutes",
+            "de": "60 Minuten",
+            "es": "60 minutos"
+          }
+        }
       ]
     },
     {
-      "key": "poll_frequency",
-      "type": "number",
-      "label": { "en": "Refresh interval (s)", "fr": "Intervalle de rafraîchissement (s)" },
+      "key": "language",
+      "type": "select",
+      "label": {
+        "en": "Language of the feature names",
+        "fr": "Langue des noms de fonctionnalités",
+        "de": "Sprache der Funktionsnamen",
+        "es": "Idioma de los nombres de funciones"
+      },
       "description": {
-        "en": "How often sensors are polled, in seconds (one minute minimum).",
-        "fr": "Fréquence d'interrogation des capteurs, en secondes (une minute minimum)."
+        "en": "Used when the devices are created, and for the scene event texts.",
+        "fr": "Utilisée à la création des appareils, et pour les textes des événements de scène.",
+        "de": "Wird beim Anlegen der Geräte und für die Texte der Szenen-Ereignisse genutzt.",
+        "es": "Se usa al crear los dispositivos y para los textos de los eventos de escena."
       },
       "required": false,
-      "default": 300,
-      "min": 60,
-      "max": 3600
+      "default": "fr",
+      "options": [
+        {
+          "value": "en",
+          "label": {
+            "en": "English",
+            "fr": "Anglais",
+            "de": "Englisch",
+            "es": "Inglés"
+          }
+        },
+        {
+          "value": "fr",
+          "label": {
+            "en": "French",
+            "fr": "Français",
+            "de": "Französisch",
+            "es": "Francés"
+          }
+        },
+        {
+          "value": "de",
+          "label": {
+            "en": "German",
+            "fr": "Allemand",
+            "de": "Deutsch",
+            "es": "Alemán"
+          }
+        },
+        {
+          "value": "es",
+          "label": {
+            "en": "Spanish",
+            "fr": "Espagnol",
+            "de": "Spanisch",
+            "es": "Español"
+          }
+        }
+      ]
     }
   ],
   "actions": [
     {
-      "key": "test_weather",
-      "label": { "en": "Test the weather provider", "fr": "Tester le fournisseur météo" },
+      "key": "list_stations",
+      "label": {
+        "en": "List the nearest stations",
+        "fr": "Lister les stations proches",
+        "de": "Nächste Stationen anzeigen",
+        "es": "Listar las estaciones cercanas"
+      },
       "timeout_seconds": 30
     },
     {
-      "key": "identify",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "fields": [
-        {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ]
+      "key": "check_connection",
+      "label": {
+        "en": "Check the connection",
+        "fr": "Tester la connexion",
+        "de": "Verbindung prüfen",
+        "es": "Comprobar la conexión"
+      },
+      "timeout_seconds": 60
     }
   ],
   "scene_triggers": [
     {
-      "key": "motion_detected",
-      "label": { "en": "Motion detected", "fr": "Mouvement détecté" },
+      "key": "warning_issued",
+      "label": {
+        "en": "New GeoSphere warning",
+        "fr": "Nouvel avertissement GeoSphere",
+        "de": "Neue GeoSphere-Warnung",
+        "es": "Nueva alerta de GeoSphere"
+      },
       "description": {
-        "en": "A demo motion sensor saw a person or an animal move.",
-        "fr": "Un détecteur de démonstration a vu bouger une personne ou un animal."
+        "en": "GeoSphere Austria issued a weather warning for the place, or raised its level. Fires as soon as it is announced, often hours before it starts.",
+        "fr": "GeoSphere Austria a émis un avertissement météo pour le lieu, ou en a relevé le niveau. Se déclenche dès l'annonce, souvent des heures avant le début.",
+        "de": "GeoSphere Austria hat eine Wetterwarnung für den Ort ausgegeben oder ihre Stufe erhöht. Löst bei der Ankündigung aus, oft Stunden vor Beginn.",
+        "es": "GeoSphere Austria ha emitido una alerta meteorológica para el lugar, o ha subido su nivel. Se activa en cuanto se anuncia, a menudo horas antes del inicio."
       },
       "fields": [
         {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Sensor", "fr": "Détecteur" }
+          "key": "warning_type",
+          "type": "multi_select",
+          "label": {
+            "en": "Warning types",
+            "fr": "Types d'avertissement",
+            "de": "Warnarten",
+            "es": "Tipos de alerta"
+          },
+          "options": [
+            {
+              "value": "wind",
+              "label": {
+                "en": "Storm",
+                "fr": "Tempête",
+                "de": "Sturm",
+                "es": "Temporal"
+              }
+            },
+            {
+              "value": "rain",
+              "label": {
+                "en": "Rain",
+                "fr": "Pluie",
+                "de": "Regen",
+                "es": "Lluvia"
+              }
+            },
+            {
+              "value": "snow",
+              "label": {
+                "en": "Snow",
+                "fr": "Neige",
+                "de": "Schnee",
+                "es": "Nieve"
+              }
+            },
+            {
+              "value": "black_ice",
+              "label": {
+                "en": "Black ice",
+                "fr": "Verglas",
+                "de": "Glatteis",
+                "es": "Hielo"
+              }
+            },
+            {
+              "value": "thunderstorm",
+              "label": {
+                "en": "Thunderstorm",
+                "fr": "Orage",
+                "de": "Gewitter",
+                "es": "Tormenta"
+              }
+            },
+            {
+              "value": "heat",
+              "label": {
+                "en": "Heat",
+                "fr": "Canicule",
+                "de": "Hitze",
+                "es": "Calor"
+              }
+            },
+            {
+              "value": "cold",
+              "label": {
+                "en": "Cold",
+                "fr": "Grand froid",
+                "de": "Kälte",
+                "es": "Frío"
+              }
+            }
+          ]
         },
         {
-          "key": "target",
+          "key": "level",
           "type": "multi_select",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" },
+          "label": {
+            "en": "Levels",
+            "fr": "Niveaux",
+            "de": "Stufen",
+            "es": "Niveles"
+          },
           "options": [
-            { "value": "person", "label": { "en": "Person", "fr": "Personne" } },
-            { "value": "animal", "label": { "en": "Animal", "fr": "Animal" } }
+            {
+              "value": "yellow",
+              "label": {
+                "en": "Yellow",
+                "fr": "Jaune",
+                "de": "Gelb",
+                "es": "Amarilla"
+              }
+            },
+            {
+              "value": "orange",
+              "label": {
+                "en": "Orange",
+                "fr": "Orange",
+                "de": "Orange",
+                "es": "Naranja"
+              }
+            },
+            {
+              "value": "red",
+              "label": {
+                "en": "Red",
+                "fr": "Rouge",
+                "de": "Rot",
+                "es": "Roja"
+              }
+            }
           ]
         }
       ],
       "variables": [
         {
-          "key": "target",
+          "key": "type_label",
           "type": "string",
-          "label": { "en": "What moved", "fr": "Ce qui a bougé" }
-        }
-      ]
-    }
-  ],
-  "scene_actions": [
-    {
-      "key": "identify_device",
-      "label": { "en": "Identify a device", "fr": "Identifier un appareil" },
-      "description": {
-        "en": "Make a device signal itself (the demo light blinks).",
-        "fr": "Fait se signaler un appareil (la lampe de démonstration clignote)."
-      },
-      "timeout_seconds": 15,
-      "fields": [
+          "label": {
+            "en": "Warning type",
+            "fr": "Type d'avertissement",
+            "de": "Warnart",
+            "es": "Tipo de alerta"
+          }
+        },
         {
-          "key": "device",
-          "type": "select",
-          "source": "devices",
-          "label": { "en": "Device", "fr": "Appareil" },
-          "required": true
-        }
-      ],
-      "outputs": [
+          "key": "level_label",
+          "type": "string",
+          "label": {
+            "en": "Level",
+            "fr": "Niveau",
+            "de": "Stufe",
+            "es": "Nivel"
+          }
+        },
         {
-          "key": "signalled",
+          "key": "level_number",
+          "type": "number",
+          "label": {
+            "en": "Level (1 to 3)",
+            "fr": "Niveau (1 à 3)",
+            "de": "Stufe (1 bis 3)",
+            "es": "Nivel (1 a 3)"
+          }
+        },
+        {
+          "key": "warning_type",
+          "type": "string",
+          "label": {
+            "en": "Type key (wind, rain…)",
+            "fr": "Clé du type (wind, rain…)",
+            "de": "Typschlüssel (wind, rain…)",
+            "es": "Clave del tipo (wind, rain…)"
+          }
+        },
+        {
+          "key": "level",
+          "type": "string",
+          "label": {
+            "en": "Level key (yellow…)",
+            "fr": "Clé du niveau (yellow…)",
+            "de": "Stufenschlüssel (yellow…)",
+            "es": "Clave del nivel (yellow…)"
+          }
+        },
+        {
+          "key": "starts_at",
+          "type": "string",
+          "label": {
+            "en": "Start",
+            "fr": "Début",
+            "de": "Beginn",
+            "es": "Inicio"
+          }
+        },
+        {
+          "key": "ends_at",
+          "type": "string",
+          "label": {
+            "en": "End",
+            "fr": "Fin",
+            "de": "Ende",
+            "es": "Fin"
+          }
+        },
+        {
+          "key": "in_force",
           "type": "boolean",
-          "label": { "en": "Device signalled", "fr": "Appareil signalé" }
+          "label": {
+            "en": "Already in force",
+            "fr": "Déjà en cours",
+            "de": "Bereits aktiv",
+            "es": "Ya en vigor"
+          }
+        },
+        {
+          "key": "is_update",
+          "type": "boolean",
+          "label": {
+            "en": "Level raised",
+            "fr": "Niveau relevé",
+            "de": "Stufe erhöht",
+            "es": "Nivel subido"
+          }
+        },
+        {
+          "key": "description",
+          "type": "string",
+          "label": {
+            "en": "Official text (German or English)",
+            "fr": "Texte officiel (allemand ou anglais)",
+            "de": "Amtlicher Text (Deutsch oder Englisch)",
+            "es": "Texto oficial (alemán o inglés)"
+          }
+        },
+        {
+          "key": "place",
+          "type": "string",
+          "label": {
+            "en": "Municipality",
+            "fr": "Commune",
+            "de": "Gemeinde",
+            "es": "Municipio"
+          }
         }
       ]
     }
   ],
   "widgets": [
     {
-      "key": "demo_status",
-      "label": { "en": "Demo status", "fr": "État de la démo" },
-      "description": {
-        "en": "Live temperature and plug power, plug connection and observed location.",
-        "fr": "Température et puissance en direct, connexion de la prise, position observée."
+      "key": "weather",
+      "label": {
+        "en": "GeoSphere weather",
+        "fr": "Météo GeoSphere",
+        "de": "GeoSphere-Wetter",
+        "es": "Tiempo GeoSphere"
       },
-      "icon": "activity",
-      "action_timeout_seconds": 15
+      "description": {
+        "en": "Station readings, the next 24 hours, warnings and tomorrow's forecast.",
+        "fr": "Mesures de la station, 24 prochaines heures, avertissements et prévisions de demain.",
+        "de": "Messwerte der Station, nächste 24 Stunden, Warnungen und Vorhersage für morgen.",
+        "es": "Datos de la estación, próximas 24 horas, alertas y previsión de mañana."
+      },
+      "icon": "cloud"
     }
   ]
 }

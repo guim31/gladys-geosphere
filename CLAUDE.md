@@ -16,8 +16,8 @@ its only runtime dependency. It started from the official JavaScript template.
 ```bash
 npm install
 npm test                                  # node --test, the built-in runner
-node --test test/devices.test.js          # one file
-node --test --test-name-pattern "plug"    # tests whose name matches
+node --test test/model.test.js            # one file
+node --test --test-name-pattern "warning" # tests whose name matches
 npm run lint                              # ESLint
 npm run format:check                      # Prettier, as the CI runs it
 npm run format                            # Prettier, fix in place
@@ -31,16 +31,21 @@ pushing.
 ## Architecture
 
 ```
-index.js                          SDK wiring only: handlers registered before connect()
-src/devices/index.js              registry of the device blueprints + dispatch helpers
-src/devices/<type>.js             one device type per file (buildDevice, onPoll, onSetValue...)
-src/scenes.js                     scene action handlers (manifest `scene_actions`)
-src/widgets.js                    dashboard widget handlers (manifest `widgets`)
+index.js                          SDK wiring only: registerHandlers(gladys), connect()
+src/app.js                        handlers: scan, poll fallback, device created, actions, widget, config
+src/service.js                    setup (house/coordinates/station), refresh cycle, states, trigger, status
+src/poller.js                     the container's own refresh timer (Gladys#3198), onPoll as fallback
+src/devices.js                    the two devices (station, place): features and states
+src/geosphere/client.js           HTTP client of the four GeoSphere endpoints (no coordinates in logs)
+src/geosphere/model.js            pure parsers: stations, observation, forecast, warnings
+src/widgets.js                    dashboard widget "weather" (pure content builder)
+src/i18n.js                       every produced text, en/fr/de/es
 src/config.js                     DEFAULT_CONFIG (mirrors the manifest defaults) + normalization
-src/weather.js                    example driver (Open-Meteo)
+src/store.js, src/issues.js       /data/state.json (warnings announced), failures logged once
+scripts/probe.mjs                 read-only probe of the real APIs (`--save` refreshes the fixtures)
 gladys-assistant-integration.json manifest: name, config_schema, actions, image...
-docs/en.md, docs/fr.md            user documentation, re-hosted by Gladys (mandatory)
-test/                             node --test, against the SDK's fake Gladys (integration-sdk/testing)
+docs/{en,fr,de,es}.md             user documentation, re-hosted by Gladys (same sections)
+test/                             node --test, against the SDK's fake Gladys and test/fixtures
 .github/scripts/release.mjs       release helpers (manifest bump, changelog), tested in test/
 ```
 
@@ -67,11 +72,12 @@ test/                             node --test, against the SDK's fake Gladys (in
   catalog `description` holds 10 to 100 characters per language. A field the
   older cores do not know needs a higher `gladys_version` minimum
   (`categories`: 4.86.0; `widgets`, `scene_triggers`, `scene_actions`,
-  `type: "provider"`: 5.1.0). `test/manifest.test.js` ties the manifest to the
+  `type: "provider"`: 5.1.0; `source: "houses"`: 5.2.0). `test/manifest.test.js` ties the manifest to the
   code (defaults, action, scene and widget handlers): change both sides
   together.
-- **User-facing text** is bilingual (English and French): action messages,
-  manifest texts, and `docs/en.md` / `docs/fr.md`, kept in sync.
+- **User-facing text** exists in English, French, German and Spanish: action
+  messages, manifest texts, feature names, widget texts, and `docs/en.md`,
+  `docs/fr.md`, `docs/de.md`, `docs/es.md`, kept in sync (`test/i18n.test.js`).
 - **Style.** Prettier formats, ESLint catches mistakes. Comments explain why,
   in English. Tests never touch the network.
 
@@ -233,3 +239,38 @@ long, et sur un « Sie »/« Ihr… » de politesse en allemand. Le store exige 
 - Docs `en`, `fr`, `de`, `es` avec les mêmes sections.
 - Chauffe, ouverture, sécurité : ne rien rendre pilotable « comme un thermostat » ou par un assistant
   vocal quand une erreur serait dangereuse (leçon d'OctoPrint).
+
+## GeoSphere Austria (propre à cette intégration)
+
+**API** (publique, sans compte ni clé) :
+
+- Data Hub `https://dataset.api.hub.geosphere.at/v1` :
+  `station/current/tawes-v1-10min/metadata` (stations et paramètres),
+  `station/current/tawes-v1-10min?parameters=TL,RFAM,…&station_ids=11035` (dernière observation),
+  `timeseries/forecast/nwp-v1-1h-2500m?parameters=t2m,rr_acc,ugust,vgust,sy&lat_lon=lat,lon`
+  (prévision horaire, 61 h, nouvelle exécution toutes les 3 h). Limites publiées : 5 requêtes/s,
+  240/h. L'intégration en fait ~13/h.
+- Avertissements `https://warnungen.zamg.at/wsapp/api/getWarningsForCoords?lon=…&lat=…&lang=de|en` :
+  hors du Data Hub documenté, format repris d'ioBroker.weather-warnings. `rawinfo.start/end` en
+  secondes epoch (texte), `wtype` 1 vent … 7 froid, `wlevel` 1 jaune, 2 orange, 3 rouge.
+- Licence des données CC BY 4.0 : attribution « GeoSphere Austria » (affichée par le widget).
+
+**Pièges découverts** :
+
+- Le proxy de la session de code refuse `dataset.api.hub.geosphere.at` et `warnungen.zamg.at` :
+  tout est testé sur fixtures (`test/fixtures/README.md` dit d'où vient chacune) ; `forecast-graz.json`
+  est **construit**, et `warnings-none.json` est une forme **supposée**. Les remplacer par la sortie
+  de `node scripts/probe.mjs <lat> <lon> --save <dir>` dès qu'une machine a le réseau.
+- TAWES a renommé des paramètres (`RF` → `RFAM`, `FF` → `FFAM`) : `OBSERVATION_PARAMETERS` garde
+  des alias, le premier présent dans les métadonnées gagne.
+- `rr_acc` est cumulé depuis l'exécution du modèle : une quantité horaire est une différence. Une
+  quantité « demain » est rattachée au jour où l'heure **se termine**.
+- Les coordonnées de la maison sont une donnée personnelle (`location: true`) : le client ne journalise
+  que l'hôte et le chemin, jamais la requête. Un test le vérifie.
+- `precipitation-sensor` n'a pas d'unité `mm` dans le front : intensité en `millimeter-per-hour`,
+  cumuls en `millimeter-per-day`.
+- La déduplication du SDK (`publishChangedStates`, option `heartbeat`) date ses valeurs avec
+  `Date.now()`, pas avec l'horloge injectée : un test de heartbeat doit simuler `Date`
+  (`t.mock.timers.enable({ apis: ['Date'] })`).
+- Faux Gladys du SDK : `gladys.connect()` (pas `fake.connect`), les gestionnaires sont dans
+  `gladys.handlers` (`action:<clé>`, `widget:<clé>`), `fake.sceneEvents` donne `{ key, data }`.

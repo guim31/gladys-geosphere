@@ -1,0 +1,133 @@
+{
+  "type": "Feature",
+  "geometry": {
+    "coordinates": [
+      [
+        [
+          [384585, 433660],
+          [383852, 433151],
+          [383353, 431290],
+          [381870, 431179],
+          [381618, 430396],
+          [380698, 430219],
+          [381000, 428437],
+          [380389, 428026],
+          [379528, 429216],
+          [378733, 428975],
+          [377449, 428213],
+          [376839, 428521],
+          [376244, 428028],
+          [375204, 429168],
+          [375478, 430774],
+          [374918, 431904],
+          [374015, 432973],
+          [375562, 435648],
+          [374291, 437012],
+          [375356, 438182],
+          [375224, 439501],
+          [376004, 438505],
+          [376315, 438780],
+          [376638, 438525],
+          [376791, 437628],
+          [377754, 436732],
+          [379339, 437129],
+          [379600, 438185],
+          [380049, 437462],
+          [381161, 437414],
+          [381213, 436754],
+          [381715, 436476],
+          [381139, 435747],
+          [381743, 434517],
+          [382731, 434774],
+          [383318, 433882],
+          [384585, 433660]
+        ]
+      ]
+    ],
+    "type": "MultiPolygon"
+  },
+  "properties": {
+    "location": {
+      "properties": {
+        "gemeindenr": 50101,
+        "name": "Salzburg",
+        "urlname": "salzburg"
+      },
+      "type": "Municipal"
+    },
+    "warnings": [
+      {
+        "type": "Warning",
+        "properties": {
+          "warnid": 10,
+          "chgid": 202406270,
+          "verlaufid": 31,
+          "warntypid": 6,
+          "begin": "29.06.2024 00:00",
+          "end": "29.06.2024 23:59",
+          "create": "2024-06-27 07:00:00+00",
+          "text": "Es ist mit erhöhter Hitzebelastung zu rechnen.",
+          "auswirkungen": "* Erhöhte Körpertemperatur\n* Erhöhter Puls\n* Schwäche/Müdigkeit\n* Kopfschmerzen\n* Muskelkrämpfe\n* Trockener Mund und Hals\n* Verwirrtheit, Schwindel, Bewusstseinsstörungen\n* Übelkeit, Erbrechen, Durchfall",
+          "empfehlungen": "* Meiden Sie direktes Sonnenlicht! Achten Sie darauf, dass Kinder vor der Sonne geschützt sind!\n* Meiden Sie verbaute und versiegelte Plätze wo es keinen Schatten gibt.\n* Gehen Sie nicht in der heißesten Tageszeit nach draußen!\n* Ziehen Sie die Vorhänge zu bzw. schließen Sie die Jalousien. Öffnen Sie die Fenster vorwiegend in der Nacht bzw. in den kühlen Morgenstunden!\n* Vermeiden Sie große Anstrengungen bzw. verschieben Sie körperliche Aktivitäten im Freien auf die frühen Morgenstunden oder den Abend!\n* Tragen Sie luftige, helle Kleidung und eine Kopfbedeckung!\n* Nehmen Sie eine kühle Dusche! Auch kalte Arm- und Fußbäder wirken entlastend.\n* Trinken Sie ausreichend und regelmäßig (mindestens 2 - 3 Liter pro Tag)! Optimal sind Wasser, ungesüßter Tee oder mit Wasser verdünnte Fruchtsäfte.\n* Denken Sie an ältere Mitmenschen und Kinder, dass auch diese regelmäßig trinken. \n* Bevorzugen Sie leichtes Essen!\n* Meiden Sie Alkohol!",
+          "meteotext": null,
+          "updategrund": null,
+          "warnstufeid": 1,
+          "rawinfo": {
+            "wtype": 6,
+            "wlevel": 1,
+            "start": "1719612000",
+            "end": "1719698340"
+          }
+        }
+      },
+      {
+        "properties": {
+          "auswirkungen": "* Kleine Muren, lokal überflutete Straßen\n* Punktuell kann es zu Überschwemmungen kommen, Keller können überflutet werden.\n* Blitzschlag kann zu Stromausfällen führen und Gebäude oder Bäume in Brand stecken.\n* Aufgrund von Sturmböen können Gegenstände herumgewirbelt werden, Äste abbrechen und vereinzelt auch Bäume umfallen.",
+          "begin": "18.09.2023 17:00",
+          "chgid": 0,
+          "create": "2023-09-17 07:00:00+00",
+          "empfehlungen": "* Schließen Sie Fenster, Türen und Garagentore sowie Dachfenster und Lichtkuppeln!\n* Verlassen Sie bei einem herannahenden Gewitter umgehend Gewässer!\n* Suchen Sie vor allem im Gebirge rechtzeitig Schutz!\n* Beachten Sie Gewitter- und Sturmwarnungen an Seen!",
+          "end": "18.09.2023 23:00",
+          "meteotext": "Im Vorfeld einer Kaltfront bilden sich ab dem späteren Nachmittag bzw. in der ersten Nachthälfte teils kräftige Gewitter. Eine Hauptgefahr sind Sturmböen aus West. Auch Hagel und Starkregen können gebietsweise dabei sein.",
+          "rawinfo": {
+            "end": "1695070800",
+            "start": "1695049200",
+            "wlevel": 1,
+            "wtype": 5
+          },
+          "text": "Gelbe Gewitterwarnung von Mo, 18.09.2023 17:00 bis Mo, 18.09.2023 23:00",
+          "updategrund": "",
+          "verlaufid": 1,
+          "warnid": 4265,
+          "warnstufeid": 1,
+          "warntypid": 5
+        },
+        "type": "Warning"
+      },
+      {
+        "properties": {
+          "auswirkungen": "* Kleine Muren, lokal überflutete Straßen\n* Punktuell kann es zu Überschwemmungen kommen, Keller können überflutet werden.\n* Blitzschlag kann zu Stromausfällen führen und Gebäude oder Bäume in Brand stecken.\n* Aufgrund von Sturmböen können Gegenstände herumgewirbelt werden, Äste abbrechen und vereinzelt auch Bäume umfallen.",
+          "begin": "18.09.2023 17:00",
+          "chgid": 3,
+          "create": "2023-09-17 07:00:00+00",
+          "empfehlungen": "* Schließen Sie Fenster, Türen und Garagentore sowie Dachfenster und Lichtkuppeln!\n* Verlassen Sie bei einem herannahenden Gewitter umgehend Gewässer!\n* Suchen Sie vor allem im Gebirge rechtzeitig Schutz!\n* Beachten Sie Gewitter- und Sturmwarnungen an Seen!",
+          "end": "18.09.2023 23:00",
+          "meteotext": "Im Vorfeld einer Kaltfront bilden sich ab dem späteren Nachmittag bzw. in der ersten Nachthälfte teils kräftige Gewitter. Eine Hauptgefahr sind Sturmböen aus West. Auch Hagel und Starkregen können gebietsweise dabei sein.",
+          "rawinfo": {
+            "end": "1695070800",
+            "start": "1695049200",
+            "wlevel": 3,
+            "wtype": 4
+          },
+          "text": "Gelbe Glatteis von Mo, 18.09.2023 17:00 bis Mo, 18.09.2023 23:00",
+          "updategrund": "",
+          "verlaufid": 1,
+          "warnid": 4266,
+          "warnstufeid": 3,
+          "warntypid": 4
+        },
+        "type": "Warning"
+      }
+    ]
+  }
+}
