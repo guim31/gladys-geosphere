@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.1] - 2026-10-15
+
 ### Added
 
 - GeoSphere Austria (formerly ZAMG) in Gladys: the official Austrian weather, from open data, no
@@ -27,4 +29,5 @@ the notes of the version's GitHub Release.
 - The configuration actions "List the nearest stations" and "Check the connection".
 - English, French, German and Spanish everywhere, documentation included.
 
-[Unreleased]: https://github.com/guim31/gladys-geosphere/commits/main
+[Unreleased]: https://github.com/guim31/gladys-geosphere/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/guim31/gladys-geosphere/releases/tag/v1.0.1

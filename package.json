@@ -1,6 +1,6 @@
 {
   "name": "gladys-geosphere",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
   "description": "Gladys Assistant integration for GeoSphere Austria: weather stations, forecast and official weather warnings.",
   "type": "module",
