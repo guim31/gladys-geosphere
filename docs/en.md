@@ -23,7 +23,7 @@ Open data: no account, no API key. This integration is not affiliated with GeoSp
 
 ## Requirements
 
-- Gladys **5.2.0** or later.
+- Gladys **5.3.0** or later.
 - A place in **Austria** (the forecast also covers the neighbouring areas, the stations and the
   warnings only Austria).
 - Your Gladys house located on the map (**Settings → Houses**), or coordinates typed in the
