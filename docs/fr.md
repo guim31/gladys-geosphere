@@ -24,7 +24,7 @@ Austria.
 
 ## Prérequis
 
-- Gladys **5.2.0** ou plus récent.
+- Gladys **5.3.0** ou plus récent.
 - Un lieu en **Autriche** (les prévisions couvrent aussi les régions voisines, les stations et les
   avertissements seulement l'Autriche).
 - Votre maison Gladys placée sur la carte (**Paramètres → Maisons**), ou des coordonnées saisies

@@ -24,7 +24,7 @@ Austria.
 
 ## Requisitos
 
-- Gladys **5.2.0** o posterior.
+- Gladys **5.3.0** o posterior.
 - Un lugar en **Austria** (la previsión cubre también las zonas vecinas; las estaciones y las
   alertas, solo Austria).
 - Su casa de Gladys situada en el mapa (**Ajustes → Casas**), o coordenadas indicadas en la

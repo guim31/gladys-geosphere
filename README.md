@@ -35,7 +35,7 @@ official weather warnings. Open data, no account, no API key.
 
 ## Requirements
 
-- Gladys Assistant **5.2.0** or later (the configuration picks a Gladys house).
+- Gladys Assistant **5.3.0** or later (catalog countries; the configuration picks a Gladys house, which needs 5.2.0).
 - A place in Austria. The forecast covers Austria and its neighbours (latitude 43 to 51.8,
   longitude 5.5 to 22.1); the stations and the warnings cover Austria only.
 - Internet access from Gladys to `dataset.api.hub.geosphere.at` and `warnungen.zamg.at`.

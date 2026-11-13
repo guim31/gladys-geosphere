@@ -24,7 +24,7 @@ Austria.
 
 ## Voraussetzungen
 
-- Gladys **5.2.0** oder neuer.
+- Gladys **5.3.0** oder neuer.
 - Ein Ort in **Österreich** (die Vorhersage deckt auch die Nachbargebiete ab, Stationen und
   Warnungen nur Österreich).
 - Dein Gladys-Zuhause auf der Karte platziert (**Einstellungen → Zuhause**) oder Koordinaten in der
