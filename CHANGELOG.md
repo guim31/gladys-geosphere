@@ -10,6 +10,8 @@ the notes of the version's GitHub Release.
 
 ## [Unreleased]
 
+## [1.0.2] - 2026-11-13
+
 ### Changed
 
 - Declared for Austria only (`countries: ["AT"]`): the Gladys catalog of an
@@ -35,5 +37,6 @@ the notes of the version's GitHub Release.
 - The configuration actions "List the nearest stations" and "Check the connection".
 - English, French, German and Spanish everywhere, documentation included.
 
-[Unreleased]: https://github.com/guim31/gladys-geosphere/compare/v1.0.1...HEAD
+[Unreleased]: https://github.com/guim31/gladys-geosphere/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/guim31/gladys-geosphere/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/guim31/gladys-geosphere/releases/tag/v1.0.1
